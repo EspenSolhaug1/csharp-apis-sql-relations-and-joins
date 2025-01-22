@@ -131,3 +131,129 @@ SELECT title, directors.country AS country from movies
         JOIN actors ON actor_id = actors.id
         JOIN directors ON director_id = directors.id
         WHERE year-extract(year FROM actors.dob) <= 30;
+
+
+
+CREATE TABLE persons(
+            id serial PRIMARY KEY,
+            name varchar
+            );
+            
+            
+INSERT INTO persons
+(name)
+VALUES 
+    ('Stanley Kubrick'),
+    ('George Lucas'),
+    ('Robert Mulligan'),
+    ('James Cameron'),
+    ('David Lean'),
+    ('Anthony Mann'),
+    ('Theodoros Angelopoulos'),
+    ('Paul Verhoeven'),
+    ('Krzysztof Kieslowski'),
+    ('Jean-Paul Rappeneau'),
+    ('Arthur C Clarke'),
+    ('Harper Lee'),
+    ('Boris Pasternak'),
+    ('Frederick Frank'),
+    ('Erik Hazelhoff Roelfzemal'),
+    ('Edmond Rostand'),
+    ('Keir Dullea'),
+    ('Mark Hamill'),
+    ('Gregory Peck'),
+    ('Leonardo DiCaprio'),
+    ('Julie Chrisie'),
+    ('Charlton Heston'),
+    ('Manos Katrakis'),
+    ('Rutger Hauer'),
+    ('Juliette Binoche'),
+    ('Gerard Depardieu');
+
+
+    /*
+    Droping for refactoring tables
+    */
+	DROP table movies;
+	DROP table actors, directors, writers;
+    
+    /*
+    Creating new tables with new persons
+    */
+
+    CREATE TABLE directors(
+        id serial PRIMARY KEY,
+        person_id int REFERENCES persons(id),
+        country varchar
+        );
+
+    CREATE TABLE writers(
+        id serial PRIMARY KEY,
+        person_id int REFERENCES persons(id),
+        email varchar
+        );
+
+    CREATE TABLE actors(
+        id serial PRIMARY KEY,
+        person_id int REFERENCES persons(id),
+        dob date
+        );
+
+    CREATE TABLE movies(
+        id serial PRIMARY KEY,
+        title varchar,
+        year int,
+        genre varchar,
+        score int,
+        director_id int REFERENCES directors(id),
+        actor_id int REFERENCES actors(id),
+        writer_id int REFERENCES writers(id)
+        );
+
+    /*
+    Populating directors, writers, actors
+    */
+      
+    INSERT INTO directors
+  	    (person_id, country)
+  	    VALUES
+  	    (1, 'USA'),
+        (2, 'USA'),
+        (3, 'USA'),
+        (4, 'Canada'),
+        (5, 'UK'),
+        (6, 'USA'),
+        (7, 'Greece'),
+        (8, 'Netherlands'),
+        (9, 'Poland'),
+        (10, 'France');
+
+    INSERT INTO actors
+  	    (person_id, dob)
+        VALUES
+        (17, '1936-05-30'),
+        (18, '1951-09-25'),
+        (19, '1916-04-05'),
+        (20, '1974-11-11'),
+        (21, '1940-04-14'),
+        (22, '1923-10-04'),
+        (23, '1908-08-14'),
+        (24, '1944-01-23'),
+        (25, '1964-03-09'),
+        (26, '1948-12-27');
+  
+    INSERT INTO writers
+  	    (person_id, email)
+        VALUES
+        (11, 'arthur@clarke.com'),
+        (2, 'george@email.com'),
+        (12, 'harper@lee.com'),
+        (4, 'james@cameroon.com'),
+        (13, 'boris@boris.com'),
+        (14, 'fred@frank.com'),
+        (7, 'theo@angelopoulos.com'),
+        (15, 'erik@roelfzema.com'),
+        (9, 'email@email.com'),
+        (16, 'edmond@rostand.com');
+    
+
