@@ -71,26 +71,30 @@ INSERT INTO directors(
 
 
 
-SELECT title, directors.name as director_name from movies
-    JOIN directors on director_id = directors.id;
+    SELECT title, persons.name as director_name from movies
+        JOIN directors on director_id = directors.id
+        JOIN persons on directors.person_id = persons.id;
 
 
-SELECT title, directors.name as director_name, actors.name as star_name from movies
-    JOIN actors on star_id = actors.id
-    JOIN directors on director_id = directors.id;
 
-SELECT title, directors.name as director_name, writers.name as     writer_name from movies
-    JOIN writers on writer_id = writers.id
-    JOIN directors on director_id = directors.id
-    WHERE writers.name = directors.name;
+    SELECT movies.title, directors_person.name AS director_name, actors_person.name AS star_name FROM movies
+        JOIN directors ON movies.director_id = directors.id
+        JOIN persons AS directors_person ON directors.person_id = directors_person.id
+        JOIN actors ON movies.actor_id = actors.id
+        JOIN persons AS actors_person ON actors.person_id = actors_person.id;
 
-SELECT title, directors.name as director_name from movies
-    JOIN directors on director_id = directors.id
-    WHERE score >= 8;
+    SELECT movies.title FROM movies
+    	JOIN directors ON movies.director_id = directors.id
+    	JOIN writers ON movies.writer_id = writers.id
+    	WHERE directors.person_id = writers.person_id;
 
-SELECT title, directors.country AS country from movies
-    JOIN directors on director_id = directors.id
-    WHERE country = 'USA';
+    SELECT title, directors.name as director_name from movies
+        JOIN directors on director_id = directors.id
+        WHERE score >= 8;
+
+    SELECT movies.title FROM movies
+        JOIN directors ON movies.director_id = directors.id
+        WHERE directors.country = 'USA';
 
 
 
@@ -98,9 +102,10 @@ SELECT title, directors.country AS country from movies
     /*
         Finds all movies with an american director that have a score of 7 or higher
     */
-    SELECT title, directors.name as director_name, directors.country as director_country, score from movies
-	    JOIN directors on director_id = directors.id
-	    WHERE score >= 7 AND directors.country = 'USA';
+  
+    SELECT movies.title FROM movies
+    	JOIN directors ON movies.director_id = directors.id
+    	WHERE directors.country = 'USA' AND movies.score >= 7;
 
     /*
         Queries for the same table as the table given in core. The names in the colomns are not always the same
@@ -115,22 +120,41 @@ SELECT title, directors.country AS country from movies
     /*
         Queries for the title of movies and the info for their star-actor
     */
-    SELECT title, actors.name AS star_name, actors.dob AS star_dob FROM movies
-        JOIN actors ON actor_id = actors.id;
+   
+    SELECT 
+        movies.title,
+        actors_person.name AS star_name,
+        actors.dob AS star_dob
+    FROM movies
+    JOIN actors ON movies.actor_id = actors.id
+    JOIN persons AS actors_person ON actors.person_id = actors_person.id;
 
     /*
         Queries for movies that had stars below the age of 40 upon release
     */
-    SELECT title, actors.name AS star_name, year-extract(year FROM actors.dob) as star_age FROM movies
-        JOIN actors ON actor_id = actors.id
-        WHERE year-extract(year FROM actors.dob) <= 40;
+     SELECT 
+    	movies.title,
+    	actors_person.name AS star_name,
+    	movies.year - EXTRACT(YEAR FROM actors.dob) AS star_age
+    	FROM movies
+    	JOIN actors ON movies.actor_id = actors.id
+    	JOIN persons AS actors_person ON actors.person_id = actors_person.id
+    	WHERE movies.year - EXTRACT(YEAR FROM actors.dob) < 40;
     /*
         Queries for title, name of star, age of star and director for movies with star actors below the age of 30 upon release
     */
-    SELECT title, actors.name AS star_name, year-extract(year FROM actors.dob) as star_age, directors.name as director_name FROM movies
-        JOIN actors ON actor_id = actors.id
-        JOIN directors ON director_id = directors.id
-        WHERE year-extract(year FROM actors.dob) <= 30;
+  
+    SELECT 
+	    movies.title,
+	    actors_person.name AS star_name,
+	    movies.year - EXTRACT(YEAR FROM actors.dob) AS star_age,
+	    directors_person.name AS director_name
+	    FROM movies
+	    JOIN actors ON movies.actor_id = actors.id
+	    JOIN persons AS actors_person ON actors.person_id = actors_person.id
+	    JOIN directors ON movies.director_id = directors.id
+	    JOIN persons AS directors_person ON directors.person_id = directors_person.id
+	    WHERE movies.year - EXTRACT(YEAR FROM actors.dob) < 30;
 
 
 
